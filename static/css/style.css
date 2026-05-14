@@ -1,0 +1,576 @@
+/* =====================================================
+   NEON DARK BLUE THEME - FIXED SIDEBAR TOGGLE & GRAPHS
+   Sidebar hidden support, full-width main content, Plotly fix
+   ===================================================== */
+
+:root {
+    --neon-glow-1: #0af;
+    --neon-glow-2: #4df;
+    --neon-glow-3: #0cf;
+    --neon-bg: rgba(8, 20, 40, 0.85);
+    --sidebar-min-width: 220px;
+    --sidebar-max-width: 400px;
+}
+
+/* Global background */
+body {
+    background: radial-gradient(circle at 20% 30%, #0a0f1a, #03070f);
+    color: #eef5ff;
+    font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+/* ========= NEON LIGHT BLUE HEADING ========= */
+.text-center-heading {
+    text-align: center;
+    font-family: 'Segoe UI', 'Orbitron', 'Poppins', sans-serif;
+    font-size: clamp(1.8rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #aaffff, #00e0ff, #0088cc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 
+        0 0 5px rgba(0, 255, 255, 0.5),
+        0 0 10px rgba(0, 200, 255, 0.4),
+        0 0 20px rgba(0, 150, 255, 0.3),
+        0 0 30px rgba(0, 100, 255, 0.2);
+    animation: neonPulse 2.5s infinite alternate ease-in-out;
+    margin: 20px 0 30px 0;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(0, 204, 255, 0.3);
+    display: inline-block;
+    width: 100%;
+}
+
+/* Smooth pulsing glow animation */
+@keyframes neonPulse {
+    0% {
+        text-shadow: 
+            0 0 2px rgba(0, 255, 255, 0.4),
+            0 0 6px rgba(0, 200, 255, 0.3),
+            0 0 12px rgba(0, 150, 255, 0.2);
+    }
+    100% {
+        text-shadow: 
+            0 0 8px rgba(0, 255, 255, 0.8),
+            0 0 18px rgba(0, 200, 255, 0.7),
+            0 0 30px rgba(0, 150, 255, 0.5),
+            0 0 45px rgba(0, 100, 255, 0.4);
+    }
+}
+
+/* Optional: Hover effect – extra brightness */
+.text-center-heading:hover {
+    animation: none;
+    text-shadow: 
+        0 0 12px cyan,
+        0 0 25px #0cf,
+        0 0 40px #0af;
+    transition: 0.3s;
+}
+/* ========= VIDEO BANNER (no overlap, centered) ========= */
+.video-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 15px 0 25px 0;
+}
+.video-wrapper {
+    max-width: 900px;
+    width: 100%;
+    position: relative;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid #0cf;
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.4);
+}
+.video-wrapper video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.mute-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    color: #0cf;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.mute-btn:hover {
+    background: #0cf;
+    color: black;
+}
+
+/* ========= BOOTSTRAP ROW & COLUMN ADJUSTMENTS ========= */
+.container-fluid .row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0;
+}
+
+/* ========= SIDEBAR (resizable, sparkle, NO fixed position) ========= */
+.sidebar {
+    background: var(--neon-bg);
+    backdrop-filter: blur(14px);
+    border-right: 2px solid rgba(0, 170, 255, 0.7);
+    border-radius: 0 24px 24px 0;
+    box-shadow: 0 0 18px rgba(0, 160, 255, 0.4), inset 0 0 8px rgba(0, 200, 255, 0.2);
+    animation: neonSparkle 1.8s infinite alternate ease-in-out;
+    
+    /* Resizable */
+    resize: horizontal;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-width: var(--sidebar-min-width);
+    max-width: var(--sidebar-max-width);
+    
+    /* Flex column layout */
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s;
+    
+    /* Ensure proper width with Bootstrap */
+    flex: 0 0 auto;
+    width: 280px; /* fallback */
+}
+
+/* When sidebar is hidden (JS adds class 'hidden') */
+.sidebar.hidden {
+    display: none;
+}
+
+/* Main content column - expands when sidebar hidden */
+.main-content {
+    flex: 1;
+    background: rgba(2, 10, 18, 0.6);
+    border-radius: 24px;
+    padding: 1.5rem;
+    margin: 0 0.5rem 0.5rem 0.5rem;
+    backdrop-filter: blur(4px);
+    overflow-x: hidden;
+    transition: all 0.3s ease;
+}
+
+/* Remove Bootstrap's default column width when sidebar hidden */
+.sidebar.hidden ~ .main-content,
+.sidebar.hidden + .main-content {
+    width: 100%;
+    margin-left: 0;
+}
+
+/* ========= SIDEBAR SCROLLBAR & RESIZE ========= */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+    background: #081c2c;
+    border-radius: 10px;
+}
+.sidebar::-webkit-scrollbar-thumb {
+    background: #0cf;
+    border-radius: 10px;
+}
+.sidebar::-webkit-resizer {
+    background: linear-gradient(135deg, transparent 40%, #0cf 55%, #3cf 90%);
+    border-radius: 0 0 8px 0;
+}
+
+/* Neon sparkle animation */
+@keyframes neonSparkle {
+    0% {
+        border-right-color: rgba(0, 160, 255, 0.5);
+        box-shadow: 0 0 6px #0af, inset 0 0 2px rgba(0, 200, 255, 0.3);
+    }
+    100% {
+        border-right-color: #3cf;
+        box-shadow: 0 0 28px #0cf, 0 0 18px rgba(0, 170, 255, 0.6), inset 0 0 12px #0cf;
+    }
+}
+
+/* Sidebar inner elements */
+.sidebar h3, .sidebar .form-label {
+    color: #caf4ff;
+    text-shadow: 0 0 5px #0af;
+}
+.sidebar .form-control, .sidebar .form-select {
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid #0cf;
+    color: white;
+}
+.sidebar .btn-primary, .sidebar .btn-success {
+    background: linear-gradient(95deg, #0a4970, #0a6e9e);
+    border: none;
+    box-shadow: 0 0 8px rgba(0, 204, 255, 0.3);
+}
+.sidebar .btn-primary:hover, .sidebar .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 18px #0cf;
+}
+
+/* ========= MAIN CONTENT SCROLLBAR ========= */
+.main-content::-webkit-scrollbar {
+    width: 8px;
+}
+.main-content::-webkit-scrollbar-track {
+    background: #0a1a24;
+}
+.main-content::-webkit-scrollbar-thumb {
+    background: #0cf;
+    border-radius: 12px;
+}
+
+
+/* ========= SMALLER NEON DARK BLUE TABLES ========= */
+.table-responsive {
+    border-radius: 16px;
+    overflow-x: auto;
+    margin-top: 0.5rem;
+}
+.table {
+    background: rgba(0, 15, 25, 0.9);
+    border-collapse: collapse;
+    color: #d4f4ff;
+    width: auto;                    /* ← auto width, not 100% */
+    max-width: 100%;
+    box-shadow: 0 0 10px rgba(0, 204, 255, 0.3);
+    border-radius: 16px;
+    font-size: 11px !important;     /* ← even smaller base font */
+}
+.table th, .table td {
+    padding: 4px 8px !important;    /* ← very compact */
+    border-bottom: 1px solid rgba(0, 204, 255, 0.4);
+    vertical-align: middle;
+}
+.table th {
+    background: #0a2a3e;
+    color: #aaffff;
+    text-transform: uppercase;
+    border-bottom: 2px solid #0cf;
+    text-shadow: 0 0 2px #0af;
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+}
+.table td {
+    font-size: 10px !important;
+}
+.table tr:hover {
+    background: rgba(0, 180, 255, 0.15);
+}
+.table tbody tr:nth-child(even) {
+    background: rgba(0, 100, 150, 0.2);
+}
+/* Also style Streamlit’s default dataframes (if not using .table class) */
+.stDataFrame, .stTable {
+    font-size: 12px !important;
+}
+.stDataFrame th, .stTable th {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+    background: #0a2a3e !important;
+    color: #aaffff !important;
+    border-bottom: 2px solid #0cf !important;
+    
+}
+.stDataFrame td, .stTable td {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+}
+.stDataFrame tbody tr:hover, .stTable tbody tr:hover {
+    background: rgba(0, 180, 255, 0.15) !important;
+}
+/* ========= NEON CARDS & GRAPH CONTAINERS ========= */
+#metrics, #parametersTable, #rankingTable {
+    background: rgba(2, 20, 35, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 204, 255, 0.5);
+    border-radius: 28px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.25);
+}
+
+/* FIXED GRAPH DIMENSIONS - ensures Plotly renders correctly */
+#r2Chart {
+    background: rgba(0, 18, 28, 0.9);
+    border-radius: 24px;
+    padding: 1rem;
+    border: 1px solid #0cf;
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.3);
+    margin-bottom: 1rem;
+    min-height: 400px;
+    width: 100%;
+    position: relative;
+}
+
+/* Graph container */
+#curveChart {
+    width: 100%;
+    height: 500px;
+    background: rgba(0, 10, 25, 0.95);
+    border: 2px solid #00e5ff;
+    border-radius: 25px;
+    padding: 15px;
+    overflow: hidden;
+
+    box-shadow:
+        0 0 15px #00e5ff,
+        0 0 30px rgba(0,229,255,0.4);
+}
+
+/* Plotly containers */
+#curveChart .js-plotly-plot,
+#curveChart .plot-container,
+#curveChart .svg-container {
+    background: transparent !important;
+}
+
+/* Remove white toolbar background */
+#curveChart .modebar {
+    background: transparent !important;
+}
+
+/* Hover text */
+#curveChart .hoverlayer text {
+    fill: white !important;
+}
+/* Slider style */
+#timeSlider {
+    accent-color: #00e5ff;
+}
+
+/* Text */
+label,
+p,
+h6 {
+    color: #dffcff;
+    font-family: Arial, sans-serif;
+}
+/* Force Plotly charts to fill container */
+.js-plotly-plot, .plotly {
+    width: 100%;
+    height: 100%;
+}
+.plotly .main-svg {
+    border-radius: 20px !important;
+}
+
+/* ========= POLYMER DETAILS SECTION ========= */
+#polymerDetails {
+    background: rgba(0, 18, 28, 0.7);
+    border-radius: 28px;
+    padding: 1.2rem;
+    border: 1px solid #0cf;
+}
+#inputParams {
+    background: #0a1a2a !important;
+    border: 1px solid #0cf;
+    color: #b3ffef;
+}
+
+/* ========= FLOATING BUTTON FOR SIDEBAR TOGGLE ========= */
+.show-sidebar-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(95deg, #0a4970, #0a6e9e);
+    border: none;
+    box-shadow: 0 0 12px #0cf;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.show-sidebar-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px #0cf;
+}
+
+/* ========= RESPONSIVE FIXES ========= */
+@media (max-width: 768px) {
+    .container-fluid .row {
+        flex-wrap: wrap;
+    }
+    .sidebar {
+        resize: none;
+        width: 100% !important;
+        min-width: unset;
+        margin-bottom: 1rem;
+    }
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+/* ========= BOOTSTRAP OVERRIDES FOR NEON LOOK ========= */
+.form-range::-webkit-slider-thumb {
+    background: #0cf;
+    box-shadow: 0 0 5px #0cf;
+}
+.form-range::-webkit-slider-runnable-track {
+    background: #0a2a3e;
+}
+.btn-info {
+    background: #0a6e9e;
+    border-color: #0cf;
+}
+.btn-info:hover {
+    background: #0c8ec2;
+    box-shadow: 0 0 12px #0cf;
+}
+
+/* Video containers above/below the table */
+.video-container {
+    margin: 2rem auto;
+    text-align: center;
+}
+.video-wrapper {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid #0cf;
+    box-shadow: 0 0 15px rgba(0, 204, 255, 0.4);
+    background: #000;
+}
+.video-wrapper video {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.mute-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    color: #0cf;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.mute-btn:hover {
+    background: #0cf;
+    color: black;
+}
+.video-caption {
+    font-size: 0.85rem;
+    color: #aaffff;
+    margin-top: 10px;
+    text-shadow: 0 0 3px #0af;
+}
+
+/* ========= NEON DARK FOOTER ========= */
+.neon-footer {
+    background: rgba(5, 15, 25, 0.95);
+    backdrop-filter: blur(12px);
+    border-top: 2px solid rgba(0, 204, 255, 0.6);
+    box-shadow: 0 -5px 20px rgba(0, 204, 255, 0.2);
+    margin-top: 3rem;
+    padding: 2rem 1rem 1rem;
+    color: #caf4ff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 2rem;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 180px;
+}
+
+.footer-section h3, .footer-section h4 {
+    color: #aaffff;
+    text-shadow: 0 0 5px #0cf;
+    margin-bottom: 1rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.footer-section p, .footer-section li {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    opacity: 0.9;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section li a {
+    color: #caf4ff;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.footer-section li a:hover {
+    color: #0cf;
+    text-shadow: 0 0 4px #0cf;
+    padding-left: 5px;
+}
+
+.social-icons a {
+    color: #caf4ff;
+    font-size: 1.5rem;
+    margin-right: 15px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.social-icons a:hover {
+    color: #0cf;
+    transform: translateY(-3px);
+    text-shadow: 0 0 8px #0cf;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 204, 255, 0.3);
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+    }
+    .social-icons a {
+        margin: 0 10px;
+    }
+}
